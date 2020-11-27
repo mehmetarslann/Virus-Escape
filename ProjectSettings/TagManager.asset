@@ -11,6 +11,7 @@ TagManager:
   - CoronaBus
   - EnemyPeople
   - Enemy
+  - CoronaBusCol
   layers:
   - Default
   - TransparentFX

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class GameManagerScript : MonoBehaviour
     Transform Player; // Player konumu almak için
 
     int score = 0; // Puanımızı tutacağız.
+    int ScoreFrame = 0; // Geçen zamana göre ekstra puan eklemesi yapacağız.
+
+    public TMPro.TextMeshProUGUI ScoreBoard; // Oyun sahnemizdeki skorumuzu aktaracağımız alan.
 
 
     // Nesnelerin bazılarında x ve y koordinatlarında problem çıktığı için problem çıkan nesneler farklı listeler içerisinde yazılacak.
@@ -21,6 +25,9 @@ public class GameManagerScript : MonoBehaviour
     List<GameObject> CoronaMaskObject;
     List<GameObject> SterilizeObject;
     List<GameObject> EnemyPeopleObject;
+
+
+    public GameObject GameStoppedPanel;
 
 
 
@@ -36,8 +43,8 @@ public class GameManagerScript : MonoBehaviour
         Player = GameObject.Find("Player").transform;
 
 
-        ObjectCreate(Sterilize, 3, SterilizeObject);
-        ObjectCreate(CoronaMask, 3, CoronaMaskObject);
+        ObjectCreate(Sterilize, 6, SterilizeObject);
+        ObjectCreate(CoronaMask, 9, CoronaMaskObject);
         ObjectCreate(CoronaBus, 3, CoronaBusObject);
         ObjectCreate(EnemyPeople, 3, EnemyPeopleObject);
 
@@ -46,19 +53,39 @@ public class GameManagerScript : MonoBehaviour
         InvokeRepeating("CreateSterilizeObject", 4.0f, 5.0f);
         InvokeRepeating("CreateEnemyPeople", 3.0f, 4.0f);
 
+        ScoreBoard.text = "SCORE " + score.ToString();
+
     }
 
 
     public void ScoreUp(int point) // Oyundaki puan toplama kodları bu alandan yönetilecek.
     {
         score += point;
-        Debug.Log(score); // Daha sonra düzenlenecek. Test amaçlı eklendi.
+        ScoreBoard.text = "SCORE " + score.ToString();
     }
 
-    public void ScoreDown(int point) // Oyundaki puan düşürme kodları bu alandan yönetilecek.
+    // Panel İşlemleri Başlangıç // 
+    public void TryAgain()
     {
-        score -= point;
-        Debug.Log(score); // Daha sonra düzenlenecek. Test amaçlı eklendi.
+        SceneManager.LoadScene("Scenes/FirstScene"); // Yeniden oyna butonuna basıldığında sahnemizin yeniden yüklenmesini sağlar.
+        Time.timeScale = 1.0f; // Yeniden yüklenen sahnemiz 0.0f'de bulunuyor. Bu sahnenin işlemeye devam etmesi için 1.0f bölümüne alırız.
+    }
+
+    public void GameStop() // Oyunu durdurmak için ekranın sağ köşesindeki butona bastığımızda buradaki işlemler gerçekleşir.
+    {
+        GameStoppedPanel.SetActive(true);
+        Time.timeScale = 0.0f;
+    }
+
+    public void ContinueButton() // Oyuna devam et butonuna basılması halinde bu metodumuz çalışır. Sahneyi kaldığı yerden devam ettiririz
+    {
+        GameStoppedPanel.SetActive(false);
+        Time.timeScale = 1.0f; // Yeniden yüklenen sahnemiz 0.0f'de bulunuyor. Bu sahnenin işlemeye devam etmesi için 1.0f bölümüne alırız.
+    }
+
+    public void LeaderBoard()
+    {
+        // Oyuna puan sıralaması eklenirse eğer, gerekli kodlar buradan kontrol edilecek.
     }
 
 
@@ -319,6 +346,11 @@ public class GameManagerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        ScoreFrame++;
+        if(ScoreFrame%47==0) // Belirli bir zaman geçtikten sonra puan vermek için 47 asal sayısını kullandık.
+        {
+            score += 1;
+        }
+        ScoreBoard.text = "SCORE " + score.ToString();
     }
 }

@@ -18,9 +18,12 @@ public class PlayerControls : MonoBehaviour
 
     GameManagerScript gamemanager; // GameManager Scriptimizdeki metodlarımıza erişeceğiz.
 
+    public GameObject TryAgainPanel;
+
+
+
     public bool IsTakenHealth = false; // Sağlık nesnesi alınırsa true olacak.
     public bool IsEnfected = false; // Karakterimiz enfekte olursa, yani düşman nesneleriyle temas ederse. ( CoronaBus & EnemyPeople)
-    public int Healht = 100; // Oyun başlangıcındaki canımız.
 
     void Start()
     {
@@ -48,59 +51,48 @@ public class PlayerControls : MonoBehaviour
 
         if (col.gameObject.tag == "Sterilize")
         {
-            RunPower = RunPower + 0.3f;
+            RunPower = RunPower + 0.05f; // Dezenfektan aldığımızda karakterimiz 0.05f daha hızlı koşar.
             col.gameObject.SetActive(false); // Çarptığımızda pasif hale getiriyoruz.
             gamemanager.ScoreUp(10); // Oyuncu dezenfektan aldığında 10 puan kazanır.
             IsTakenHealth = true; // Sağlık nesnesi alındı. Değişkenimiz true oldu.
-            Invoke("UpHealth", 10.0f); // Tek seferlik bir metod oluşturduk ve 10 saniye etkili olacak.
 
         }
 
         if (col.gameObject.tag == "CoronaMask")
         {
-            RunPower = RunPower + 0.3f;
+            RunPower = RunPower + 0.05f; // Maske aldığımızda karakterimiz 0.05f daha hızlı koşmaya başlar.
             col.gameObject.SetActive(false); // Çarptığımızda pasif hale getiriyoruz.
             gamemanager.ScoreUp(10); // Oyuncu dezenfektan aldığında 10 puan kazanır.
             IsTakenHealth = true; // Sağlık nesnesi alındı. Değişkenimiz true oldu.
-            //Invoke("UpHealth", 10.0f); // Tek seferlik bir metod oluşturduk ve 10 saniye etkili olacak.
         }
+    }
 
-        // Düşman nesneleri ve çarpışma sonundaki etkileşimler
+    void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject.tag == "Die") // Karakterimizi kovalayan 'Enemy' isimli nesnemizin tag'ı Die olduğu için 'Die' olarak sorgulama yaptık.
+        {
+
+            // Ölüm Ekranı
+            TryAgainPanel.SetActive(true);
+            Time.timeScale = 0.0f;
+        }
 
         if (col.gameObject.tag == "CoronaBus")
         {
-            RunPower = RunPower - 0.1f;
-            col.gameObject.SetActive(false);
-            gamemanager.ScoreDown(10); // Düşman nesnesine çarpıldığında 10 puan düşücek
-            IsEnfected = true;
-            Invoke("DownHealth", 10.0f); // Düşman nesnesine çarpıldığında canımız 10 azalacak.
+
+            // Ölüm Ekranı
+            TryAgainPanel.SetActive(true);
+            Time.timeScale = 0.0f;
         }
 
         if (col.gameObject.tag == "EnemyPeople")
         {
-            RunPower = RunPower - 0.1f;
-            col.gameObject.SetActive(false);
-            gamemanager.ScoreDown(10); // Düşman nesnesine çarpıldığında 10 puan düşücek
-            IsEnfected = true;
-            Invoke("DownHealth", 10.0f); // Düşman nesnesine çarpıldığında canımız 10 azalacak.
+
+            // Ölüm Ekranı
+            TryAgainPanel.SetActive(true);
+            Time.timeScale = 0.0f;
         }
     }
-
-    void DownHealth() // Burada sağlığı düşüren kodlar yazılacak.
-    {
-            Healht = Healht - 25; // Düşman engellerine çarptığımızda canımız 10 azalır.
-            Debug.Log("Canımız {0}"+ Healht);
-    }
-
-    void UpHealth()
-    {
-        if (Healht < 100) // Canımız 100'den küçük olduğu durumlarda can alabiliriz.
-        {
-            Healht = Healht + 10;
-            Debug.Log("Canımız {0}" + Healht);
-        }
-    }
-
 
     private void OnCollisionStay(Collision collision)
     {
