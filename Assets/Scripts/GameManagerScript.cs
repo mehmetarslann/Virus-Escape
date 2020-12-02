@@ -12,12 +12,16 @@ public class GameManagerScript : MonoBehaviour
     public GameObject EnemyPeople; // Kalabalık insan toplulukları.
     public GameObject CoronaBus; // Sosyal mesafesiz otobüs.
 
+
+
     Transform Player; // Player konumu almak için
 
+    int health = 100; // Canımızı tutuyor. Zamana bağlı olarak düşmesini sağlayacağız.
     int score = 0; // Puanımızı tutacağız.
     int ScoreFrame = 0; // Geçen zamana göre ekstra puan eklemesi yapacağız.
 
     public TMPro.TextMeshProUGUI ScoreBoard; // Oyun sahnemizdeki skorumuzu aktaracağımız alan.
+    public TMPro.TextMeshProUGUI HealthTxt;
 
 
     // Nesnelerin bazılarında x ve y koordinatlarında problem çıktığı için problem çıkan nesneler farklı listeler içerisinde yazılacak.
@@ -43,17 +47,19 @@ public class GameManagerScript : MonoBehaviour
         Player = GameObject.Find("Player").transform;
 
 
-        ObjectCreate(Sterilize, 6, SterilizeObject);
-        ObjectCreate(CoronaMask, 9, CoronaMaskObject);
-        ObjectCreate(CoronaBus, 3, CoronaBusObject);
-        ObjectCreate(EnemyPeople, 3, EnemyPeopleObject);
+        ObjectCreate(Sterilize, 30, SterilizeObject);
+        ObjectCreate(CoronaMask, 30, CoronaMaskObject);
+        ObjectCreate(CoronaBus, 30, CoronaBusObject);
+        ObjectCreate(EnemyPeople, 30, EnemyPeopleObject);
 
-        InvokeRepeating("CreateCoronaMaskObject", 0.0f, 1.0f);
-        InvokeRepeating("CreateCoronaBusObject", 2.0f, 3.0f);
-        InvokeRepeating("CreateSterilizeObject", 4.0f, 5.0f);
-        InvokeRepeating("CreateEnemyPeople", 3.0f, 4.0f);
+        InvokeRepeating("CreateCoronaMaskObject", 1.0f, 3.0f);
+        InvokeRepeating("CreateCoronaBusObject", 1.0f, 4.0f);
+        InvokeRepeating("CreateSterilizeObject", 2.0f, 2.0f);
+        InvokeRepeating("CreateEnemyPeople", 5.0f, 6.0f);
 
         ScoreBoard.text = "SCORE " + score.ToString();
+        HealthTxt.text = health.ToString();
+
 
     }
 
@@ -62,6 +68,28 @@ public class GameManagerScript : MonoBehaviour
     {
         score += point;
         ScoreBoard.text = "SCORE " + score.ToString();
+    }
+
+    public void HealthUp(int point) // Oyundaki can alma işlemleri bu metod ile yapılacak.
+    {
+        if (health < 100)
+        {
+            health += point;
+            HealthTxt.text = health.ToString();
+        }
+        if (health + 10 > 100) // Eğer canı aldığımızda, canımız 100'den fazla oluyorsa, canımızı 100'e getirir.
+        {
+            health = 100;
+            HealthTxt.text = health.ToString();
+        }
+    }
+
+    public void HealthDown()
+    {
+        if (health > 0)
+        {
+            health = health - 1; // Oyun devam ettiği süre boyunca her frame'de canı azaltacağız. Can 0'dan küçük olduğu durumlarda bu işlem yapılmayacak.
+        }
     }
 
     // Panel İşlemleri Başlangıç // 
@@ -252,7 +280,7 @@ public class GameManagerScript : MonoBehaviour
                         {
                             mask.SetActive(false);
                         }
-                        
+
                     }
 
                     return; // döngüyü sonlandır
@@ -320,9 +348,6 @@ public class GameManagerScript : MonoBehaviour
                         }
 
                     }
-
-
-
                     return; // döngüyü sonlandır
                 }
             }
@@ -342,15 +367,24 @@ public class GameManagerScript : MonoBehaviour
         }
     }
 
-
     // Update is called once per frame
     void Update()
     {
         ScoreFrame++;
-        if(ScoreFrame%47==0) // Belirli bir zaman geçtikten sonra puan vermek için 47 asal sayısını kullandık.
+        if (ScoreFrame % 47 == 0) // Belirli bir zaman geçtikten sonra puan vermek için 47 asal sayısını kullandık.
         {
             score += 1;
         }
         ScoreBoard.text = "SCORE " + score.ToString();
+
+        if (ScoreFrame % 97 == 0)
+        {
+            health -= 1;
+            if (health == 0) // Eğer canımız sıfır olursa yeniden oyna metodumuz çalışacak.
+            {
+                TryAgain();
+            }
+        }
+        HealthTxt.text = health.ToString();
     }
 }

@@ -54,6 +54,7 @@ public class PlayerControls : MonoBehaviour
             RunPower = RunPower + 0.05f; // Dezenfektan aldığımızda karakterimiz 0.05f daha hızlı koşar.
             col.gameObject.SetActive(false); // Çarptığımızda pasif hale getiriyoruz.
             gamemanager.ScoreUp(10); // Oyuncu dezenfektan aldığında 10 puan kazanır.
+            gamemanager.HealthUp(10); // Oyuncu dezenfektan aldığında canı 10 artacak.
             IsTakenHealth = true; // Sağlık nesnesi alındı. Değişkenimiz true oldu.
 
         }
@@ -62,7 +63,8 @@ public class PlayerControls : MonoBehaviour
         {
             RunPower = RunPower + 0.05f; // Maske aldığımızda karakterimiz 0.05f daha hızlı koşmaya başlar.
             col.gameObject.SetActive(false); // Çarptığımızda pasif hale getiriyoruz.
-            gamemanager.ScoreUp(10); // Oyuncu dezenfektan aldığında 10 puan kazanır.
+            gamemanager.ScoreUp(10); // Oyuncu maske aldığında 10 puan kazanır.
+            gamemanager.HealthUp(10); // Oyuncu maske aldığında canı 10 aratacak.
             IsTakenHealth = true; // Sağlık nesnesi alındı. Değişkenimiz true oldu.
         }
     }
