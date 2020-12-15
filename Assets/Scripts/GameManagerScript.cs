@@ -8,6 +8,7 @@ public class GameManagerScript : MonoBehaviour
     // Bu script içerisinde sahnemizde karakterimiz ilerlerken karşısına engeller ve ödüllerin random şekilde çıkmasını sağlayan kodları yazacağız.
 
     public GameObject Sterilize; // Dezenfektan nesnemiz.
+    public GameObject Stone; // Taş nesnemiz.
     public GameObject CoronaMask; // Maske nesnemiz.
     public GameObject EnemyPeople; // Kalabalık insan toplulukları.
     public GameObject CoronaBus; // Sosyal mesafesiz otobüs.
@@ -29,6 +30,7 @@ public class GameManagerScript : MonoBehaviour
     List<GameObject> CoronaMaskObject;
     List<GameObject> SterilizeObject;
     List<GameObject> EnemyPeopleObject;
+    List<GameObject> StoneObject;
 
 
     public GameObject GameStoppedPanel;
@@ -38,29 +40,42 @@ public class GameManagerScript : MonoBehaviour
     void Start()
     {
         // Başlangıçta boş listelerimizi oluşturuyoruz 
-
         CoronaBusObject = new List<GameObject>();
         CoronaMaskObject = new List<GameObject>();
         SterilizeObject = new List<GameObject>();
         EnemyPeopleObject = new List<GameObject>();
+        StoneObject = new List<GameObject>();
 
         Player = GameObject.Find("Player").transform;
 
 
-        ObjectCreate(Sterilize, 30, SterilizeObject);
-        ObjectCreate(CoronaMask, 30, CoronaMaskObject);
-        ObjectCreate(CoronaBus, 30, CoronaBusObject);
-        ObjectCreate(EnemyPeople, 30, EnemyPeopleObject);
+        ObjectCreate(Sterilize, 100, SterilizeObject);
+        ObjectCreate(CoronaMask, 100, CoronaMaskObject);
+        ObjectCreate(CoronaBus, 100, CoronaBusObject);
+        ObjectCreate(EnemyPeople, 10, EnemyPeopleObject);
+        ObjectCreate(Stone, 10, StoneObject);
 
         InvokeRepeating("CreateCoronaMaskObject", 1.0f, 3.0f);
         InvokeRepeating("CreateCoronaBusObject", 1.0f, 4.0f);
         InvokeRepeating("CreateSterilizeObject", 2.0f, 2.0f);
         InvokeRepeating("CreateEnemyPeople", 5.0f, 6.0f);
+        InvokeRepeating("CreateStone", 3.0f, 4.0f);
 
         ScoreBoard.text = "SCORE " + score.ToString();
         HealthTxt.text = health.ToString();
 
 
+    }
+
+    void ObjectCreate(GameObject article, int amount, List<GameObject> AllObject) // Bu methodumuzda nesne türetimi yapacağız. Parametre olarak nesne ve adedi gelecek.
+    {
+        // 0 dan miktara kadar yeni nesneler oluşturduk ve list'e ekledik.
+        for (int i = 0; i < amount; i++)
+        {
+            GameObject new_article = Instantiate(article);
+            new_article.SetActive(false); // Yeni oluşturulan nesnelerimizi görünmez hale getirdik.
+            AllObject.Add(new_article);
+        }
     }
 
 
@@ -117,6 +132,52 @@ public class GameManagerScript : MonoBehaviour
     }
 
 
+    void CreateStone() // Stone nesnesinin sahneye eklenmesi ile ilgili işlemler
+    {
+        int r_stone = Random.Range(0, StoneObject.Count);
+
+        if (StoneObject[r_stone].activeSelf == false)
+        {
+            StoneObject[r_stone].SetActive(true);
+            int r_location = Random.Range(0, 2);
+
+            if (r_location == 0)
+            {
+                StoneObject[r_stone].transform.position = new Vector3(0.9f, 0.5f, Player.position.z + 10.0f);
+            }
+            if (r_location == 1)
+            {
+                StoneObject[r_stone].transform.position = new Vector3(-2f, 0.5f, Player.position.z + 10.0f);
+
+            }
+
+        }
+        else
+        {
+            foreach (GameObject stone in StoneObject)
+            {
+                if (stone.activeSelf == false)// görünürlüğü pasif ise
+                {
+                    stone.SetActive(true); // aktif yap
+
+                    int r_location2 = Random.Range(0, 2);
+
+                    if (r_location2 == 0)
+                    {
+                        stone.transform.position = new Vector3(0.9f, 0.5f, Player.position.z + 10.0f);
+                    }
+                    if (r_location2 == 1)
+                    {
+                        stone.transform.position = new Vector3(-2f, 0.5f, Player.position.z + 10.0f);
+                    }
+
+                    return; // döngüyü sonlandır
+                }
+            }
+
+        }
+    }
+
     void CreateSterilizeObject() // Dezenfektanın sahneye eklenmesi ile ilgili işlemler
     {
         int r_sterilize = Random.Range(0, SterilizeObject.Count);
@@ -128,11 +189,11 @@ public class GameManagerScript : MonoBehaviour
 
             if (r_location == 0)
             {
-                SterilizeObject[r_sterilize].transform.position = new Vector3(-0.6f, 0.1f, Player.position.z + 10.0f);
+                SterilizeObject[r_sterilize].transform.position = new Vector3(1.4f, 0.27f, Player.position.z + 10.0f);
             }
             if (r_location == 1)
             {
-                SterilizeObject[r_sterilize].transform.position = new Vector3(-3.9f, 0.1f, Player.position.z + 10.0f);
+                SterilizeObject[r_sterilize].transform.position = new Vector3(-2f, 0.27f, Player.position.z + 10.0f);
 
             }
 
@@ -174,11 +235,11 @@ public class GameManagerScript : MonoBehaviour
 
             if (r_location == 0)
             {
-                EnemyPeopleObject[r_people].transform.position = new Vector3(1.6f, 2.8f, Player.position.z + 10.0f);
+                EnemyPeopleObject[r_people].transform.position = new Vector3(1.4f, 0.43f, Player.position.z + 10.0f);
             }
             if (r_location == 1)
             {
-                EnemyPeopleObject[r_people].transform.transform.position = new Vector3(-1.4f, 2.8f, Player.position.z + 10.0f);
+                EnemyPeopleObject[r_people].transform.transform.position = new Vector3(-2f, 0.43f, Player.position.z + 10.0f);
 
             }
 
@@ -238,11 +299,11 @@ public class GameManagerScript : MonoBehaviour
 
             if (r_location == 0)
             {
-                CoronaMaskObject[r_mask].transform.position = new Vector3(1.0f, 0.1f, Player.position.z + 10.0f);
+                CoronaMaskObject[r_mask].transform.position = new Vector3(1.4f, 0.3f, Player.position.z + 10.0f);
             }
             if (r_location == 1)
             {
-                CoronaMaskObject[r_mask].transform.position = new Vector3(-2.1f, 0.1f, Player.position.z + 10.0f);
+                CoronaMaskObject[r_mask].transform.position = new Vector3(-2.0f, 0.3f, Player.position.z + 10.0f);
             }
 
             if (CoronaMaskObject[r_mask].tag == "CoronaMask") // Eğer çarpıştığımız nesnenin tagı CoronaMask ise
@@ -356,27 +417,19 @@ public class GameManagerScript : MonoBehaviour
     }
 
 
-    void ObjectCreate(GameObject article, int amount, List<GameObject> AllObject) // Bu methodumuzda nesne türetimi yapacağız. Parametre olarak nesne ve adedi gelecek.
-    {
-        // 0 dan miktara kadar yeni nesneler oluşturduk ve list'e ekledik.
-        for (int i = 0; i < amount; i++)
-        {
-            GameObject new_article = Instantiate(article);
-            new_article.SetActive(false); // Yeni oluşturulan nesnelerimizi görünmez hale getirdik.
-            AllObject.Add(new_article);
-        }
-    }
 
-    // Update is called once per frame
-    void Update()
+    void ScoreUp()
     {
-        ScoreFrame++;
         if (ScoreFrame % 47 == 0) // Belirli bir zaman geçtikten sonra puan vermek için 47 asal sayısını kullandık.
         {
             score += 1;
         }
         ScoreBoard.text = "SCORE " + score.ToString();
+    }
 
+    void HealthUp()
+    {
+        
         if (ScoreFrame % 97 == 0)
         {
             health -= 1;
@@ -386,5 +439,14 @@ public class GameManagerScript : MonoBehaviour
             }
         }
         HealthTxt.text = health.ToString();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        ScoreFrame++;
+        ScoreUp();
+        HealthUp();
+
     }
 }

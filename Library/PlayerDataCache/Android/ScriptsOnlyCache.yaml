@@ -6,7 +6,7 @@ ScriptsOnlyBuild:
     - Enemy_Chase
     - GameManagerScript
     - PlayerControls
-    - VirusAutoRotate
+    - StartMenu
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.UnitTesting.CallbackData
     Unity.TextMeshPro.dll:
@@ -19,8 +19,10 @@ ScriptsOnlyBuild:
     UnityEditor.Graphs.dll:
     - UnityEditor.Graphs.AnimationBlendTree.Graph
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
     - UnityEditor.Graphs.AnimationStateMachine.Graph
     - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.StateNode
     - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
@@ -52,8 +54,6 @@ ScriptsOnlyBuild:
     - Class: 43
       Script: {instanceID: 0}
     - Class: 48
-      Script: {instanceID: 0}
-    - Class: 49
       Script: {instanceID: 0}
     - Class: 54
       Script: {instanceID: 0}
@@ -90,10 +90,6 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11870}
     - Class: 114
-      Script: {instanceID: 11898}
-    - Class: 114
-      Script: {instanceID: 12012}
-    - Class: 114
       Script: {instanceID: 12146}
     - Class: 114
       Script: {instanceID: 12184}
@@ -102,22 +98,14 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 12500}
     - Class: 114
-      Script: {instanceID: 12516}
-    - Class: 114
       Script: {instanceID: 12714}
     - Class: 114
       Script: {instanceID: 12778}
-    - Class: 114
-      Script: {instanceID: 12940}
-    - Class: 114
-      Script: {instanceID: 13052}
     - Class: 114
       Script: {instanceID: 13152}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
-      Script: {instanceID: 0}
-    - Class: 135
       Script: {instanceID: 0}
     - Class: 136
       Script: {instanceID: 0}
@@ -154,6 +142,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 48
       Script: {instanceID: 0}
+    - Class: 49
+      Script: {instanceID: 0}
     - Class: 65
       Script: {instanceID: 0}
     - Class: 74
@@ -175,15 +165,25 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11478}
     - Class: 114
+      Script: {instanceID: 11536}
+    - Class: 114
       Script: {instanceID: 11870}
+    - Class: 114
+      Script: {instanceID: 11898}
     - Class: 114
       Script: {instanceID: 12272}
     - Class: 114
       Script: {instanceID: 12500}
     - Class: 114
+      Script: {instanceID: 12516}
+    - Class: 114
       Script: {instanceID: 12714}
     - Class: 114
       Script: {instanceID: 12778}
+    - Class: 114
+      Script: {instanceID: 12940}
+    - Class: 114
+      Script: {instanceID: 13052}
     - Class: 114
       Script: {instanceID: 13152}
     - Class: 115
@@ -491,7 +491,7 @@ ScriptsOnlyBuild:
     className: VertexJitter
   - hash:
       serializedVersion: 2
-      Hash: 31415ea7dae973a6eb9113e2572b2b4f
+      Hash: da56a917191a16f17abfb5c46ba951ac
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameManagerScript
@@ -881,6 +881,6 @@ ScriptsOnlyBuild:
     className: PlayableTrack
   platform: 13
   scenePathNames:
-  - Assets/Scenes/FirstScene.unity
   - Assets/Scenes/menu.unity
+  - Assets/Scenes/FirstScene.unity
   playerPath: D:/VirusEscapeBuild/virusescape.apk
