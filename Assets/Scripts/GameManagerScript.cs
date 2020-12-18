@@ -20,12 +20,12 @@ public class GameManagerScript : MonoBehaviour
     int health = 100; // Canımızı tutuyor. Zamana bağlı olarak düşmesini sağlayacağız.
     int score = 0; // Puanımızı tutacağız.
     int ScoreFrame = 0; // Geçen zamana göre ekstra puan eklemesi yapacağız.
+    bool GameStatus = false; // Oyunun durdurulup durdurulmadığını kontrol etmek için
 
     public TMPro.TextMeshProUGUI ScoreBoard; // Oyun sahnemizdeki skorumuzu aktaracağımız alan.
     public TMPro.TextMeshProUGUI HealthTxt;
 
 
-    // Nesnelerin bazılarında x ve y koordinatlarında problem çıktığı için problem çıkan nesneler farklı listeler içerisinde yazılacak.
     List<GameObject> CoronaBusObject;
     List<GameObject> CoronaMaskObject;
     List<GameObject> SterilizeObject;
@@ -33,9 +33,7 @@ public class GameManagerScript : MonoBehaviour
     List<GameObject> StoneObject;
 
 
-    public GameObject GameStoppedPanel;
-
-
+    public GameObject GameStoppedPanel; // Temel değişkenler
 
     void Start()
     {
@@ -49,23 +47,23 @@ public class GameManagerScript : MonoBehaviour
         Player = GameObject.Find("Player").transform;
 
 
-        ObjectCreate(Sterilize, 100, SterilizeObject);
-        ObjectCreate(CoronaMask, 100, CoronaMaskObject);
-        ObjectCreate(CoronaBus, 100, CoronaBusObject);
+        ObjectCreate(Sterilize, 120, SterilizeObject);
+        ObjectCreate(CoronaMask, 190, CoronaMaskObject);
+        ObjectCreate(CoronaBus, 180, CoronaBusObject);
         ObjectCreate(EnemyPeople, 10, EnemyPeopleObject);
-        ObjectCreate(Stone, 10, StoneObject);
+        ObjectCreate(Stone, 100, StoneObject);
 
-        InvokeRepeating("CreateCoronaMaskObject", 1.0f, 3.0f);
-        InvokeRepeating("CreateCoronaBusObject", 1.0f, 4.0f);
-        InvokeRepeating("CreateSterilizeObject", 2.0f, 2.0f);
-        InvokeRepeating("CreateEnemyPeople", 5.0f, 6.0f);
-        InvokeRepeating("CreateStone", 3.0f, 4.0f);
+        InvokeRepeating("CreateCoronaMaskObject", 1.0f, 10.0f);
+        InvokeRepeating("CreateCoronaBusObject", 1.0f, 9.0f);
+        InvokeRepeating("CreateSterilizeObject", 2.0f, 10.0f);
+        InvokeRepeating("CreateEnemyPeople", 5.0f, 10.0f);
+        InvokeRepeating("CreateStone", 3.0f, 10.0f);
 
         ScoreBoard.text = "SCORE " + score.ToString();
         HealthTxt.text = health.ToString();
 
 
-    }
+    } // Oyun başlangıcında yapılan işlemler
 
     void ObjectCreate(GameObject article, int amount, List<GameObject> AllObject) // Bu methodumuzda nesne türetimi yapacağız. Parametre olarak nesne ve adedi gelecek.
     {
@@ -76,52 +74,62 @@ public class GameManagerScript : MonoBehaviour
             new_article.SetActive(false); // Yeni oluşturulan nesnelerimizi görünmez hale getirdik.
             AllObject.Add(new_article);
         }
-    }
-
+    } // Sahnede nesne oluşturma metodu
 
     public void ScoreUp(int point) // Oyundaki puan toplama kodları bu alandan yönetilecek.
     {
-        score += point;
-        ScoreBoard.text = "SCORE " + score.ToString();
-    }
-
-    public void HealthUp(int point) // Oyundaki can alma işlemleri bu metod ile yapılacak.
-    {
-        if (health < 100)
+        if (GameStatus == false) // Oyun durdurulmadıysa aldığımız objelerde puan verilecek.
         {
-            health += point;
-            HealthTxt.text = health.ToString();
+            score += point;
+            ScoreBoard.text = "SCORE " + score.ToString();
         }
-        if (health + 10 > 100) // Eğer canı aldığımızda, canımız 100'den fazla oluyorsa, canımızı 100'e getirir.
+    } // Puan toplama işlemleri
+
+public void HealthUp(int point) // Oyundaki can alma işlemleri bu metod ile yapılacak.
+    {
+        if (GameStatus == false) // Eğer oyun durdurulmamış ise can verecek.
         {
-            health = 100;
-            HealthTxt.text = health.ToString();
+            if (health < 100)
+            {
+                health += point;
+                HealthTxt.text = health.ToString();
+            }
+            if (health + 10 > 100) // Eğer canı aldığımızda, canımız 100'den fazla oluyorsa, canımızı 100'e getirir.
+            {
+                health = 100;
+                HealthTxt.text = health.ToString();
+            }
         }
     }
 
     public void HealthDown()
     {
-        if (health > 0)
+        if (GameStatus == false) // Eğer oyun durdurulmamış ise can azalacak.
         {
-            health = health - 1; // Oyun devam ettiği süre boyunca her frame'de canı azaltacağız. Can 0'dan küçük olduğu durumlarda bu işlem yapılmayacak.
+            if (health > 0)
+            {
+                health = health - 1; // Oyun devam ettiği süre boyunca her frame'de canı azaltacağız. Can 0'dan küçük olduğu durumlarda bu işlem yapılmayacak.
+            }
         }
-    }
+    } // Can ile ilgili işlemler
 
-    // Panel İşlemleri Başlangıç // 
-    public void TryAgain()
+public void TryAgain()
     {
+        GameStatus = true; // Eğer karakter ölmüşse oyun durumu true olacak.
         SceneManager.LoadScene("Scenes/FirstScene"); // Yeniden oyna butonuna basıldığında sahnemizin yeniden yüklenmesini sağlar.
         Time.timeScale = 1.0f; // Yeniden yüklenen sahnemiz 0.0f'de bulunuyor. Bu sahnenin işlemeye devam etmesi için 1.0f bölümüne alırız.
     }
 
     public void GameStop() // Oyunu durdurmak için ekranın sağ köşesindeki butona bastığımızda buradaki işlemler gerçekleşir.
     {
+        GameStatus = true;
         GameStoppedPanel.SetActive(true);
         Time.timeScale = 0.0f;
     }
 
     public void ContinueButton() // Oyuna devam et butonuna basılması halinde bu metodumuz çalışır. Sahneyi kaldığı yerden devam ettiririz
     {
+        GameStatus = true;
         GameStoppedPanel.SetActive(false);
         Time.timeScale = 1.0f; // Yeniden yüklenen sahnemiz 0.0f'de bulunuyor. Bu sahnenin işlemeye devam etmesi için 1.0f bölümüne alırız.
     }
@@ -129,10 +137,9 @@ public class GameManagerScript : MonoBehaviour
     public void LeaderBoard()
     {
         // Oyuna puan sıralaması eklenirse eğer, gerekli kodlar buradan kontrol edilecek.
-    }
+    } // Oyun Panelleri
 
-
-    void CreateStone() // Stone nesnesinin sahneye eklenmesi ile ilgili işlemler
+void CreateStone() // Stone nesnesinin sahneye eklenmesi ile ilgili işlemler
     {
         int r_stone = Random.Range(0, StoneObject.Count);
 
@@ -414,39 +421,41 @@ public class GameManagerScript : MonoBehaviour
             }
 
         }
-    }
+    } // Nesnelerin oluşturulması işlemleri
 
-
-
-    void ScoreUp()
+void ScoreUpTime()
     {
-        if (ScoreFrame % 47 == 0) // Belirli bir zaman geçtikten sonra puan vermek için 47 asal sayısını kullandık.
+        if (GameStatus == false) // Eğer oyun durdurulmamış ise puan vermeye devam et.
         {
-            score += 1;
-        }
-        ScoreBoard.text = "SCORE " + score.ToString();
-    }
-
-    void HealthUp()
-    {
-        
-        if (ScoreFrame % 97 == 0)
-        {
-            health -= 1;
-            if (health == 0) // Eğer canımız sıfır olursa yeniden oyna metodumuz çalışacak.
+            if (ScoreFrame % 47 == 0) // Belirli bir zaman geçtikten sonra puan vermek için 47 asal sayısını kullandık.
             {
-                TryAgain();
+                score += 1;
             }
+            ScoreBoard.text = "SCORE " + score.ToString();
         }
-        HealthTxt.text = health.ToString();
     }
 
-    // Update is called once per frame
+    void HealthUpTime()
+    {
+        if (GameStatus == false) // Eğer oyun durdurulmamış ise zamana bağlı olarak can azalacak.
+        {
+            if (ScoreFrame % 97 == 0)
+            {
+                health -= 1;
+                if (health == 0) // Eğer canımız sıfır olursa yeniden oyna metodumuz çalışacak.
+                {
+                    TryAgain();
+                }
+            }
+            HealthTxt.text = health.ToString();
+        }
+    } // Puan ve sağlık işlemleri
+
     void Update()
     {
         ScoreFrame++;
-        ScoreUp();
-        HealthUp();
+        ScoreUpTime();
+        HealthUpTime();
 
-    }
+    } // Update Fonksiyonu
 }

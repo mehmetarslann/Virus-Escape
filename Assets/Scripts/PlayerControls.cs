@@ -8,13 +8,14 @@ public class PlayerControls : MonoBehaviour
 
     bool left; // Karakterin sağa ve sola hareketlerini kontrol etmek için, true or false
     bool right;
+    bool Up;
 
     bool isJump = false; // Burada karakterin havada olup olmadığını kontrol edeceğiz. 2 defa zıplamasını engellemek amaçlı.
 
     Animator JumpAnim; // Karakterimiz zıpladığında zıplama animasyonu devreye girecek.
 
-    Transform ground_1;
-    Transform ground_2;
+    Transform ground_1; // 1.Yol - Başlangıç yolu
+    Transform ground_2; // 2.Yol
 
     GameManagerScript gamemanager; // GameManager Scriptimizdeki metodlarımıza erişeceğiz.
 
@@ -23,7 +24,7 @@ public class PlayerControls : MonoBehaviour
 
 
     public bool IsTakenHealth = false; // Sağlık nesnesi alınırsa true olacak.
-    public bool IsEnfected = false; // Karakterimiz enfekte olursa, yani düşman nesneleriyle temas ederse. ( CoronaBus & EnemyPeople)
+    public bool IsEnfected = false; // Karakterimiz enfekte olursa, yani düşman nesneleriyle temas ederse. ( CoronaBus & EnemyPeople) // Temel değişkenler
 
     void Start()
     {
@@ -34,9 +35,9 @@ public class PlayerControls : MonoBehaviour
         ground_2 = GameObject.Find("Ground_2").transform; // Sahnede Ground_2 isimli nesneyi bulur ve konumunu alır.
 
         gamemanager = GameObject.Find("GameManager").GetComponent<GameManagerScript>(); // Oyun yöneticisi nesnemizin içindeki componentlere eriştik.
-    }
+    } // Start Fonksiyonu
 
-    void OnTriggerEnter(Collider col)
+void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.name == "Ground_1") // Sahnemizdeki yol 1 ve yol 2'ye çarpışma companent'i ekledik. Burada da kontrollerini yapıp yolların lokasyonlarını değiştireceğiz.
         {
@@ -98,30 +99,40 @@ public class PlayerControls : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
+
         isJump = false;
+
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        isJump = true;
-    }
-    // Update is called once per frame
-    void Update()
+        if (collision.gameObject.name == "CoronaBus" || collision.gameObject.name == "stone") // Eğer taş veya otobüse temas ediyorsa tekrar zıplama pasif olur.
+        {
+            isJump = true;
+        }
+    } // Çarpışma Componentleri 
+
+void Update()
     {
         if (Input.touchCount > 0)
         {
             // Karakterimizin sağa veya sola dönüşlerini touch deltaposition ile belirleriz. 
             Touch P_Touch = Input.GetTouch(0);
-            if (P_Touch.deltaPosition.x > 100f)
+            if (P_Touch.deltaPosition.x > 100f) // x ekseninde + değerler sağa dönüşleri temsil eder.
             {
                 left = false;
                 right = true;
             }
-            if (P_Touch.deltaPosition.x < -100f)
+            if (P_Touch.deltaPosition.x < -100f) // x ekseninde - değerler sola dönüşleri temsil eder.
             {
                 left = true;
                 right = false;
 
+            }
+
+            if (P_Touch.deltaPosition.y > 100f)
+            {
+                Up = true;
             }
         }
 
@@ -138,19 +149,26 @@ public class PlayerControls : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position, new Vector3(-2.0f, transform.position.y, transform.position.z), RunPower * Time.deltaTime);
         }
 
+        if (Up == true)
+        {
+            Jump();
+        }
+
         // Karakterimizin ileri yöndeki hareket kodları
         // Karakterimizin z ekseninde belirttiğimiz koşu hızı ile hareket edecektir. Bunun her frame içerisinde yapacağı için zamana bağlı olarak çarpma işlemi yaptık.
         transform.Translate(0, 0, RunPower * Time.deltaTime);
-    }
+    } // Update Fonksiyonu
 
-    public void Jump() // Ekrana tıklandığında karakterimiz zıplayacak.
+public void Jump() // Ekrana tıklandığında karakterimiz zıplayacak.
     {
         if (isJump == false) // Karakter yere temas ediyorsa, zıplayabilir.
         {
             JumpAnim.SetTrigger("Jump"); // Animatör içerisinde oluşturmuş olduğumuz Jump isimli trigger devreye girer.
+            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, 2f, transform.position.z), JumpingPower * Time.deltaTime);
             rc.velocity = Vector3.zero;
             rc.velocity = Vector3.up * JumpingPower;
+            Up = false;
         }
 
-    }
+    } // Zıplama Fonksiyonu
 }
